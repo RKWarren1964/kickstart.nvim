@@ -67,5 +67,4 @@ return {
       end,
     },
   },
-  print 'gitsigns loaded ...',
 }

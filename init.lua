@@ -55,6 +55,7 @@ require('lazy').setup({
   require 'kickstart.plugins.render-markdown',
   require 'kickstart.plugins.roslyn',
   require 'kickstart.plugins.snipe',
+  require 'kickstart.plugins.lualine',
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
