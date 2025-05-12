@@ -16,7 +16,7 @@ return {
       -- By loading as a dependencies, we ensure that we are available to set
       -- the handlers for Roslyn.
       'tris203/rzls.nvim',
-      -- branch = 'pullDiags',
+      branch = 'pullDiags',
       config = true,
     },
   },
@@ -47,8 +47,8 @@ return {
     require('roslyn').setup {
       cmd = cmd,
       ---@diagnostic disable-next-line: missing-fields
-      ---@module 'roslyn.config'
-      ---@type RoslynNvimConfig
+      -- ---@module 'roslyn.config'
+      -- ---@type RoslynNvimConfig
       config = {
         handlers = require 'rzls.roslyn_handlers',
         settings = {
