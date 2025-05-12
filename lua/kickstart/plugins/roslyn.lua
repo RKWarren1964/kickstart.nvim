@@ -1,3 +1,13 @@
+-- return {
+--   'seblyng/roslyn.nvim',
+--   ft = 'cs',
+--   ---@module 'roslyn.config'
+--   ---@type RoslynNvimConfig
+--   opts = {
+--     -- your configuration comes here; leave empty for default settings
+--     -- NOTE: You must configure `cmd` in `config.cmd` unless you have installed via mason
+--   },
+-- }
 return {
   'seblyng/roslyn.nvim',
   ft = { 'cs', 'razor' },
@@ -17,10 +27,7 @@ return {
     ---@type string[]
     local cmd = {}
 
-    print(vim.inspect(cmd))
-
     local roslyn_package = mason_registry.get_package 'roslyn'
-    vim.print(roslyn_package)
     if roslyn_package:is_installed() then
       vim.list_extend(cmd, {
         'roslyn',
@@ -37,9 +44,11 @@ return {
       end
     end
 
-    return {
+    require('roslyn').setup {
       cmd = cmd,
       ---@diagnostic disable-next-line: missing-fields
+      ---@module 'roslyn.config'
+      ---@type RoslynNvimConfig
       config = {
         handlers = require 'rzls.roslyn_handlers',
         settings = {
