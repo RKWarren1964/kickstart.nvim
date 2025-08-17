@@ -40,6 +40,7 @@ require('lazy').setup({
   -- require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
+	require 'kickstart.plugins.mason',
   require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.neo-tree',
   require 'kickstart.plugins.gitsigns',
@@ -53,7 +54,7 @@ require('lazy').setup({
   require 'kickstart.plugins.conform',
   require 'kickstart.plugins.blink',
   require 'kickstart.plugins.render-markdown',
-  require 'kickstart.plugins.roslyn',
+  -- require 'kickstart.plugins.roslyn',
   require 'kickstart.plugins.snipe',
   require 'kickstart.plugins.lualine',
 }, {

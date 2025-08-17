@@ -1,55 +1,34 @@
--- return {
---   'seblyng/roslyn.nvim',
---   ft = 'cs',
---   ---@module 'roslyn.config'
---   ---@type RoslynNvimConfig
---   opts = {
---     -- your configuration comes here; leave empty for default settings
---     -- NOTE: You must configure `cmd` in `config.cmd` unless you have installed via mason
---   },
--- }
+-- We must assign the MASON path ourselves since LazyVim has pinned Mason to 1.*.
+local mason_registry = require 'mason-registry'
+local mason_path = vim.fn.stdpath 'data' .. '/mason'
+local rzls_path = vim.fs.joinpath(mason_path, '/packages/rzls/libexec')
+
+local rzls_cmd = {
+  'roslyn',
+  '--stdio',
+  '--logLevel=Information',
+  '--extensionLogDirectory=' .. vim.fs.dirname(vim.lsp.get_log_path()),
+  '--razorSourceGenerator=' .. vim.fs.joinpath(rzls_path, 'Microsoft.CodeAnalysis.Razor.Compiler.dll'),
+  '--razorDesignTimePath=' .. vim.fs.joinpath(rzls_path, 'Targets', 'Microsoft.NET.Sdk.Razor.DesignTime.targets'),
+  '--extension',
+  vim.fs.joinpath(rzls_path, 'RazorExtension', 'Microsoft.VisualStudioCode.RazorExtension.dll'),
+}
+
 return {
-  'seblyng/roslyn.nvim',
-  ft = { 'cs', 'razor' },
-  dependencies = {
-    {
-      -- By loading as a dependencies, we ensure that we are available to set
-      -- the handlers for Roslyn.
-      'tris203/rzls.nvim',
-      branch = 'pullDiags',
-      config = true,
+  {
+    'seblyng/roslyn.nvim',
+    ft = { 'cs', 'razor' },
+    dependencies = {
+      {
+        -- By loading as a dependencies, we ensure that we are available to set
+        -- the handlers for Roslyn.
+        'tris203/rzls.nvim',
+        config = true,
+      },
     },
-  },
-  config = function()
-    -- Use one of the methods in the Integration section to compose the command.
-    local mason_registry = require 'mason-registry'
-
-    ---@type string[]
-    local cmd = {}
-
-    local roslyn_package = mason_registry.get_package 'roslyn'
-    if roslyn_package:is_installed() then
-      vim.list_extend(cmd, {
-        'roslyn',
-        '--stdio',
-        '--logLevel=Information',
-        '--extensionLogDirectory=' .. vim.fs.dirname(vim.lsp.get_log_path()),
-      })
-
-      local rzls_package = mason_registry.get_package 'rzls'
-      if rzls_package:is_installed() then
-        local rzls_path = vim.fn.expand '$MASON/packages/rzls/libexec'
-        table.insert(cmd, '--razorSourceGenerator=' .. vim.fs.joinpath(rzls_path, 'Microsoft.CodeAnalysis.Razor.Compiler.dll'))
-        table.insert(cmd, '--razorDesignTimePath=' .. vim.fs.joinpath(rzls_path, 'Targets', 'Microsoft.NET.Sdk.Razor.DesignTime.targets'))
-      end
-    end
-
-    require('roslyn').setup {
-      cmd = cmd,
-      ---@diagnostic disable-next-line: missing-fields
-      -- ---@module 'roslyn.config'
-      -- ---@type RoslynNvimConfig
-      config = {
+    config = function()
+      vim.lsp.config('roslyn', {
+        cmd = rzls_cmd,
         handlers = require 'rzls.roslyn_handlers',
         settings = {
           ['csharp|inlay_hints'] = {
@@ -70,16 +49,17 @@ return {
             dotnet_enable_references_code_lens = true,
           },
         },
-      },
-    }
-  end,
-  init = function()
-    -- We add the Razor file types before the plugin loads.
-    vim.filetype.add {
-      extension = {
-        razor = 'razor',
-        cshtml = 'razor',
-      },
-    }
-  end,
+      })
+      vim.lsp.enable 'roslyn'
+    end,
+    init = function()
+      -- We add the Razor file types before the plugin loads.
+      vim.filetype.add {
+        extension = {
+          razor = 'razor',
+          cshtml = 'razor',
+        },
+      }
+    end,
+  },
 }
